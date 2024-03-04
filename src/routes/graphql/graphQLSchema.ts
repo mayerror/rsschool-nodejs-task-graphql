@@ -20,6 +20,29 @@ export const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'Query',
     fields: {
+      memberType: {
+        type: MemberTypeG,
+        args: {
+          id: {
+            type: new GraphQLNonNull(idEnumType),
+          },
+        },
+        resolve: async (_source, args: MemberType, { prisma }: GraphQLContext) => {
+          const member = await prisma.memberType.findUnique({
+            where: {
+              id: args.id,
+            },
+          });
+          return member;
+        },
+      },
+      memberTypes: {
+        type: MemberTypeList,
+        resolve: async (_root, _args, { prisma }: GraphQLContext) => {
+          const memberTypes = await prisma.memberType.findMany();
+          return memberTypes;
+        },
+      },
       user: {
         type: UserType as GraphQLObjectType,
         args: {
@@ -41,30 +64,6 @@ export const schema = new GraphQLSchema({
         resolve: async (_root, _args, context: GraphQLContext) => {
           const users = await context.prisma.user.findMany();
           return users;
-        },
-      },
-      memberTypes: {
-        type: MemberTypeList,
-        resolve: async (_root, _args, { prisma }: GraphQLContext) => {
-          const memberTypes = await prisma.memberType.findMany();
-          return memberTypes;
-        },
-      },
-      memberType: {
-        type: MemberTypeG as GraphQLObjectType,
-        args: {
-          id: {
-            type: new GraphQLNonNull(GraphQLString),
-            // type: new GraphQLNonNull(idEnumType),
-          },
-        },
-        resolve: async (_source, args: MemberType, { prisma }: GraphQLContext) => {
-          const member = await prisma.memberType.findUnique({
-            where: {
-              id: args.id,
-            },
-          });
-          return member;
         },
       },
       posts: {

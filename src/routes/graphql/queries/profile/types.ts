@@ -9,7 +9,7 @@ import { UUIDType } from '../../types/uuid.js';
 import { UserType } from '../user/types.js';
 import { GraphQLContext } from '../../graphQLSchema.js';
 import { Profile } from '@prisma/client';
-import { MemberTypeG } from '../memberType/types.js';
+import { MemberTypeG, idEnumType } from '../memberType/types.js';
 
 export const ProfileType = new GraphQLObjectType({
   name: 'ProfileType',
@@ -18,7 +18,7 @@ export const ProfileType = new GraphQLObjectType({
     isMale: { type: GraphQLBoolean },
     yearOfBirth: { type: GraphQLInt },
     userId: { type: UUIDType },
-    memberTypeId: { type: GraphQLString },
+    memberTypeId: { type: idEnumType },
     user: {
       type: UserType as GraphQLObjectType,
       resolve: async (source: Profile, _args, { prisma }: GraphQLContext) => {

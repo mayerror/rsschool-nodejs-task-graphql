@@ -5,25 +5,24 @@ import {
   GraphQLList,
   GraphQLEnumType,
 } from 'graphql';
-import { MemberTypeId } from '../../../member-types/schemas.js';
-import { ProfileTypeList, ProfileType } from '../profile/types.js';
+import { ProfileTypeList } from '../profile/types.js';
 import { MemberType } from '@prisma/client';
 import { GraphQLContext } from '../../graphQLSchema.js';
 
 export const idEnumType = new GraphQLEnumType({
-  name: 'IdType',
+  name: 'MemberTypeId',
   values: {
     basic: {
-      value: MemberTypeId.BASIC,
+      value: 'basic',
     },
     business: {
-      value: MemberTypeId.BUSINESS,
+      value: 'business',
     },
   },
 });
 
 export const MemberTypeG = new GraphQLObjectType({
-  name: 'MemberTypeG',
+  name: 'MemberType',
   fields: () => ({
     id: { type: idEnumType },
     discount: { type: GraphQLFloat },

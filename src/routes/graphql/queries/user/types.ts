@@ -34,17 +34,29 @@ export const UserType = new GraphQLObjectType({
     userSubscribedTo: {
       type: UserTypeList as GraphQLList<GraphQLObjectType>,
       resolve: async (source: User, _args, { prisma }: GraphQLContext) => {
-        const favList = await prisma.subscribersOnAuthors.findMany({
+        return await prisma.user.findMany({
           where: {
-            subscriberId: source.id,
+            subscribedToUser: {
+              some: {
+                subscriberId: source.id,
+              },
+            },
           },
         });
-        const idFavList = favList.map((user) => user.authorId);
-        const authors = await prisma.user.findMany();
-        const result = authors.filter((author) => idFavList.includes(author.id));
-        console.log(authors);
-        console.log(idFavList);
-        return result;
+      },
+    },
+    subscribedToUser: {
+      type: UserTypeList as GraphQLList<GraphQLObjectType>,
+      resolve: async (source: User, _args, { prisma }: GraphQLContext) => {
+        return await prisma.user.findMany({
+          where: {
+            userSubscribedTo: {
+              some: {
+                authorId: source.id,
+              },
+            },
+          },
+        });
       },
     },
   }),
