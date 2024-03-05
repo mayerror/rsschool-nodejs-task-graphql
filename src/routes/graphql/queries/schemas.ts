@@ -21,12 +21,14 @@ export const schema = new GraphQLSchema({
             type: new GraphQLNonNull(UUIDType),
           },
         },
-        resolve: async (_source, args: User, context: GraphQLContext) => {
-          return await context.prisma.user.findUnique({
+        resolve: async (_source, args: User, { prisma }: GraphQLContext) => {
+          console.log(args);
+          const user = await prisma.user.findUnique({
             where: {
               id: args.id,
             },
           });
+          return user;
         },
       },
       users: {
