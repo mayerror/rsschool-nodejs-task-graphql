@@ -1,16 +1,14 @@
 import { PrismaClient } from '@prisma/client';
-import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
-import { UserType } from './user/types.js';
+import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
+import { UserType, UserTypeList } from './user/types.js';
 import { User } from '@prisma/client';
 import { UUIDType } from '../types/uuid.js';
-import { MemberType } from './memberType/types.js';
+import { MemberType, MemberTypeList } from './memberType/types.js';
+import { PostTypeList } from './post/types.js';
 
 export type GraphQLContext = {
   prisma: PrismaClient;
 };
-
-const UserTypeList = new GraphQLList(UserType);
-const MemberTypeList = new GraphQLList(MemberType);
 
 export const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -52,6 +50,13 @@ export const schema = new GraphQLSchema({
         resolve: async (_root, _args, { prisma }: GraphQLContext) => {
           const memberTypes = await prisma.memberType.findMany();
           return memberTypes;
+        },
+      },
+      posts: {
+        type: PostTypeList,
+        resolve: async (_root, _args, { prisma }: GraphQLContext) => {
+          const posts = await prisma.post.findMany();
+          return posts;
         },
       },
     },

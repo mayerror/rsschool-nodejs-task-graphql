@@ -1,5 +1,10 @@
-import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLInt } from 'graphql';
-import { UUIDType } from '../../types/uuid.js';
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLList,
+} from 'graphql';
 
 export const MemberType = new GraphQLObjectType({
   name: 'MemberType',
@@ -9,3 +14,5 @@ export const MemberType = new GraphQLObjectType({
     postsLimitPerMonth: { type: GraphQLInt },
   },
 });
+
+export const MemberTypeList = new GraphQLList(MemberType);
