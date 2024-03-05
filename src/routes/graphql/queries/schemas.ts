@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
+import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
 import { UserType, UserTypeList } from './user/types.js';
 import { User } from '@prisma/client';
 import { UUIDType } from '../types/uuid.js';
@@ -23,7 +23,6 @@ export const schema = new GraphQLSchema({
           },
         },
         resolve: async (_source, args: User, { prisma }: GraphQLContext) => {
-          console.log(args);
           const user = await prisma.user.findUnique({
             where: {
               id: args.id,
@@ -51,6 +50,22 @@ export const schema = new GraphQLSchema({
         resolve: async (_root, _args, { prisma }: GraphQLContext) => {
           const memberTypes = await prisma.memberType.findMany();
           return memberTypes;
+        },
+      },
+      memberType: {
+        type: MemberType,
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+          },
+        },
+        resolve: async (_source, args: { id: string }, { prisma }: GraphQLContext) => {
+          const member = await prisma.memberType.findUnique({
+            where: {
+              id: args.id,
+            },
+          });
+          return member;
         },
       },
       posts: {
