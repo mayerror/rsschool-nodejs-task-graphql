@@ -5,6 +5,7 @@ import { User } from '@prisma/client';
 import { UUIDType } from '../types/uuid.js';
 import { MemberType, MemberTypeList } from './memberType/types.js';
 import { PostTypeList } from './post/types.js';
+import { ProfileTypeList } from './profile/types.js';
 
 export type GraphQLContext = {
   prisma: PrismaClient;
@@ -57,6 +58,13 @@ export const schema = new GraphQLSchema({
         resolve: async (_root, _args, { prisma }: GraphQLContext) => {
           const posts = await prisma.post.findMany();
           return posts;
+        },
+      },
+      profiles: {
+        type: ProfileTypeList,
+        resolve: async (_root, _args, { prisma }: GraphQLContext) => {
+          const profiles = await prisma.profile.findMany();
+          return profiles;
         },
       },
     },
