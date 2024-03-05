@@ -1,10 +1,16 @@
-import { Post, PrismaClient, Profile, User } from '@prisma/client';
-import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
-import { UserType, UserTypeList } from './user/types.js';
-import { UUIDType } from '../types/uuid.js';
-import { MemberType, MemberTypeList } from './memberType/types.js';
-import { PostType, PostTypeList } from './post/types.js';
-import { ProfileType, ProfileTypeList } from './profile/types.js';
+import { MemberType, Post, PrismaClient, Profile, User } from '@prisma/client';
+import {
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLSchema,
+  GraphQLString,
+} from 'graphql';
+import { UserType, UserTypeList } from './queries/user/types.js';
+import { UUIDType } from './types/uuid.js';
+import { MemberTypeG, MemberTypeList, idEnumType } from './queries/memberType/types.js';
+import { PostType, PostTypeList } from './queries/post/types.js';
+import { ProfileType, ProfileTypeList } from './queries/profile/types.js';
 
 export type GraphQLContext = {
   prisma: PrismaClient;
@@ -15,7 +21,7 @@ export const schema = new GraphQLSchema({
     name: 'Query',
     fields: {
       user: {
-        type: UserType,
+        type: UserType as GraphQLObjectType,
         args: {
           id: {
             type: new GraphQLNonNull(UUIDType),
@@ -34,13 +40,6 @@ export const schema = new GraphQLSchema({
         type: UserTypeList,
         resolve: async (_root, _args, context: GraphQLContext) => {
           const users = await context.prisma.user.findMany();
-          // const users = await context.prisma.user.findMany({
-          //   select: {
-          //     id: true,
-          //     name: true,
-          //     balance: true,
-          //   },
-          // });
           return users;
         },
       },
@@ -52,13 +51,14 @@ export const schema = new GraphQLSchema({
         },
       },
       memberType: {
-        type: MemberType,
+        type: MemberTypeG as GraphQLObjectType,
         args: {
           id: {
             type: new GraphQLNonNull(GraphQLString),
+            // type: new GraphQLNonNull(idEnumType),
           },
         },
-        resolve: async (_source, args: { id: string }, { prisma }: GraphQLContext) => {
+        resolve: async (_source, args: MemberType, { prisma }: GraphQLContext) => {
           const member = await prisma.memberType.findUnique({
             where: {
               id: args.id,
@@ -68,14 +68,14 @@ export const schema = new GraphQLSchema({
         },
       },
       posts: {
-        type: PostTypeList,
+        type: PostTypeList as GraphQLList<GraphQLObjectType>,
         resolve: async (_root, _args, { prisma }: GraphQLContext) => {
           const posts = await prisma.post.findMany();
           return posts;
         },
       },
       post: {
-        type: PostType,
+        type: PostType as GraphQLObjectType,
         args: {
           id: {
             type: new GraphQLNonNull(UUIDType),
@@ -91,14 +91,14 @@ export const schema = new GraphQLSchema({
         },
       },
       profiles: {
-        type: ProfileTypeList,
+        type: ProfileTypeList as GraphQLList<GraphQLObjectType>,
         resolve: async (_root, _args, { prisma }: GraphQLContext) => {
           const profiles = await prisma.profile.findMany();
           return profiles;
         },
       },
       profile: {
-        type: ProfileType,
+        type: ProfileType as GraphQLObjectType,
         args: {
           id: {
             type: new GraphQLNonNull(UUIDType),
