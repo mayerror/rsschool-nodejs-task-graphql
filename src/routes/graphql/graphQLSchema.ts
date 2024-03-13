@@ -1,16 +1,13 @@
 import { MemberType, Post, PrismaClient, Profile, User } from '@prisma/client';
-import {
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLSchema,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { UserType, UserTypeList } from './queries/user/types.js';
 import { UUIDType } from './types/uuid.js';
 import { MemberTypeG, MemberTypeList, idEnumType } from './queries/memberType/types.js';
 import { PostType, PostTypeList } from './queries/post/types.js';
 import { ProfileType, ProfileTypeList } from './queries/profile/types.js';
+import { CreatePostInput, CreatePostType } from './mutations/post/types.js';
+import { CreateUserInput, CreateUserType } from './mutations/user/types.js';
+import { CreateProfileInput, CreateProfileType } from './mutations/profile/types.js';
 
 export type GraphQLContext = {
   prisma: PrismaClient;
@@ -114,4 +111,61 @@ export const schema = new GraphQLSchema({
       },
     },
   }),
+  mutation: new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+      createPost: {
+        type: PostType as GraphQLObjectType,
+        args: {
+          dto: {
+            type: new GraphQLNonNull(CreatePostInput),
+          },
+        },
+        resolve: async (_source, args: CreatePostType, { prisma }: GraphQLContext) => {
+          return await prisma.post.create({
+            data: args.dto,
+          });
+        },
+      },
+      createUser: {
+        type: UserType as GraphQLObjectType,
+        args: {
+          dto: {
+            type: new GraphQLNonNull(CreateUserInput),
+          },
+        },
+        resolve: async (_source, args: CreateUserType, { prisma }: GraphQLContext) => {
+          return await prisma.user.create({
+            data: args.dto,
+          });
+        },
+      },
+      createProfile: {
+        type: ProfileType as GraphQLObjectType,
+        args: {
+          dto: {
+            type: new GraphQLNonNull(CreateProfileInput),
+          },
+        },
+        resolve: async (_source, args: CreateProfileType, { prisma }: GraphQLContext) => {
+          return await prisma.profile.create({
+            data: args.dto,
+          });
+        },
+      },
+    },
+  }),
 });
+
+// isMale: {
+//   type: new GraphQLNonNull(GraphQLBoolean),
+// },
+// yearOfBirth: {
+//   type: new GraphQLNonNull(GraphQLInt),
+// },
+// userId: {
+//   type: new GraphQLNonNull(UUIDType),
+// },
+// memberTypeId: {
+//   type: new GraphQLNonNull(GraphQLString),
+// },
