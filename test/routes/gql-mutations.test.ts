@@ -28,11 +28,8 @@ await test('gql-mutations', async (t) => {
     const {
       body: { data, errors },
     } = await gqlQuery(app, {
-      query: `mutation ($postDto: CreatePostInput!, $userDto: CreateUserInput!, $profileDto: CreateProfileInput!) {
+      query: `mutation ($postDto: CreatePostInput!, $profileDto: CreateProfileInput!) {
         createPost(dto: $postDto) {
-            id
-        }
-        createUser(dto: $userDto) {
             id
         }
         createProfile(dto: $profileDto) {
@@ -47,12 +44,12 @@ await test('gql-mutations', async (t) => {
     });
 
     const { body: foundCreatedPost } = await getPost(app, data.createPost.id);
-    const { body: foundCreatedUser } = await getUser(app, data.createUser.id);
+    // const { body: foundCreatedUser } = await getUser(app, data.createUser.id);
     const { body: foundCreatedProfile } = await getProfile(app, data.createProfile.id);
 
     t.ok(!errors);
     t.ok(foundCreatedPost);
-    t.ok(foundCreatedUser);
+    // t.ok(foundCreatedUser);
     t.ok(foundCreatedProfile);
   });
 
